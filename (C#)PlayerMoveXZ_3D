@@ -1,0 +1,48 @@
+using UnityEngine;
+
+public class PlayerMove : MonoBehaviour
+{
+    Animator anim;
+    Rigidbody rigid;
+
+    public float MoveSpeed;
+    public float WalkSpeed;
+    public float RunSpeed;
+    public float RotSpeed;
+    void Start()
+    {
+        anim = GetComponent<Animator>();
+        rigid = GetComponent<Rigidbody>();
+        MoveSpeed = WalkSpeed;
+    }
+    void Update()
+    {
+        if(Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+        {
+            //Run or Walk
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                MoveSpeed = RunSpeed;
+                anim.SetBool("Run", true);
+                anim.SetBool("Walk", false);
+            }
+            else
+            {
+                MoveSpeed = WalkSpeed;
+                anim.SetBool("Run", false);
+                anim.SetBool("Walk", true);
+            }
+            //Move
+            rigid.MovePosition(transform.position + new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized* Time.deltaTime * MoveSpeed);
+            //Lerp
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized), Time.deltaTime * RotSpeed);
+        }
+        else
+        {
+            //Reset
+            transform.rotation = transform.rotation;
+            anim.SetBool("Run", false);
+            anim.SetBool("Walk", false);
+        }
+    }
+}
